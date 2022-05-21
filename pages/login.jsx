@@ -13,7 +13,7 @@ const LoginPage = () => {
     const username = fData.get('username')
     const password = fData.get('password')
 
-    const response = await axios.post('http://localhost:1001/login', {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
       username,
       password
     })

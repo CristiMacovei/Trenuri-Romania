@@ -9,7 +9,7 @@ const IndexPage = () => {
   useEffect(() => {
     const tokenCookie = getCookie('qwe-token')
 
-    axios.post('http://localhost:1001/auth', {
+    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth`, {
       token: tokenCookie
     })
     .then(res => {
