@@ -2,13 +2,13 @@ import { useRef } from 'react'
 import axios from 'axios'
 import { setCookies } from 'cookies-next'
 
+import Image from 'next/image'
+
 import '../styles/LoginPage.module.css'
 import LoginStyledInput from '../components/LoginStyledInput'
 import StyledButton from '../components/StyledButton'
 
 const LoginPage = () => {
-  const form = useRef()
-
   async function handleSubmit(evt) {
     evt.preventDefault()
 
@@ -33,8 +33,9 @@ const LoginPage = () => {
   }
 
   return (
-    <div className='w-screen h-screen overflow-auto bg-gradient-to-r from-purple-800 via-violet-900 to-purple-800'>
-      <div className='flex flex-col items-center justify-center h-full'>
+    <div className='relative w-screen h-screen overflow-auto bg'>
+      <Image src='/background.jpg' className='object-cover object-center' alt='background' layout='fill' />
+      <div className='relative flex flex-col items-center justify-center h-full z-1'>
         <form onSubmit={handleSubmit}>
           <div className='flex flex-col items-center gap-8'>
             <div className="flex flex-col items-center gap-4">

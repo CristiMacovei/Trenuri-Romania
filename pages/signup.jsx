@@ -2,9 +2,13 @@ import { useRef } from 'react'
 import axios from 'axios'
 import { setCookies } from 'cookies-next'
 
-const SignupPage = () => {
-  const form = useRef()
+import Image from 'next/image'
 
+import '../styles/LoginPage.module.css'
+import LoginStyledInput from '../components/LoginStyledInput'
+import StyledButton from '../components/StyledButton'
+
+const SignupPage = () => {
   async function handleSubmit(evt) {
     evt.preventDefault()
 
@@ -27,13 +31,22 @@ const SignupPage = () => {
   }
 
   return (
-    <div>
-      <form ref={form} onSubmit={handleSubmit}>
-        <input type="text" name="username" />
-        <input type="password" name="password" />
-
-        <input type="submit" value="MATA" />
-      </form>
+    <div className='relative w-screen h-screen overflow-auto bg'>
+      <Image src='/background.jpg' className='object-cover object-center' alt='background' layout='fill' />
+      <div className='relative flex flex-col items-center justify-center h-full z-1'>
+        <form onSubmit={handleSubmit}>
+          <div className='flex flex-col items-center gap-8'>
+            <div className="flex flex-col items-center gap-4">
+              <LoginStyledInput name='username' type='text' placeholder='Enter username'/>
+              <LoginStyledInput name='password' type='password' placeholder='Enter password'/>
+            </div>
+            
+            <div className="mx-auto">
+              <StyledButton text='Signup'/>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
