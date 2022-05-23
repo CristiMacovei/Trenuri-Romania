@@ -12,7 +12,7 @@ const SignupPage = () => {
   async function handleSubmit(evt) {
     evt.preventDefault()
 
-    const fData = new FormData(form.current)
+    const fData = new FormData(evt.target)
 
     const username = fData.get('username')
     const password = fData.get('password')
