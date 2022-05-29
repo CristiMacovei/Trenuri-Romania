@@ -31,10 +31,12 @@ const AutocompleteInput = (props) => {
   }
 
   function setValue(id, name) {
-    input.current.value = name
-    idInput.current.value = id
+    props.refInput.current.value = name
+    props.refIdInput.current.value = id
 
     setIsDropdownVisible(false)
+
+    props.handleSelected()
   }
 
   return (
@@ -47,17 +49,17 @@ const AutocompleteInput = (props) => {
         className={props.className} 
         placeholder={props.placeholder} 
         onChange={handleChange}
-        ref={input}
+        ref={props.refInput}
       />
 
       <input 
         type="text" 
         name={props.name + '-id'} 
         className='hidden'
-        ref={idInput}
+        ref={props.refIdInput}
       />
 
-      <div className={isDropdownVisible ? 'border border-zinc-200 rounded-lg absolute top-0 flex flex-col gap-4 mt-32 w-64 p-4 max-h-96 overflow-y-auto z-20 bg-white' : 'hidden'} ref={dropdown}>
+      <div className={isDropdownVisible ? 'border border-zinc-200 rounded-lg absolute flex flex-col gap-4 mt-8 ml-4 w-64 p-4 max-h-96 overflow-y-auto z-20 bg-white' : 'hidden'} ref={dropdown}>
         {
           dropdownData.map(( { stationId, stationName } ) => {
             return (
