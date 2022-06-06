@@ -7,22 +7,25 @@ import Image from 'next/image'
 
 import AutocompleteInput from '../components/AutocompleteInput'
 import Navbar from '../components/Navbar'
+import PathsDisplay from '../components/PathsDisplay'
 
 
 const IndexPage = () => {
   const main = useRef()
-  const [markers, setMarkers] = useState({ start: null, dest: null })
-
+  
+  const refPaths = useRef()
   const refStartInput = useRef()
   const refStartIdInput = useRef()
   const refDestInput = useRef()
   const refDestIdInput = useRef()
+  
+  const [stations, setStations] = useState([])
+  const [paths, setPaths] = useState([])
+  const [markers, setMarkers] = useState({ start: null, dest: null })
 
   const MapWithNoSSR = dynamic(() => import("../components/Map"), {
     ssr: false
   });
-
-  const [stations, setStations] = useState([])
 
   async function handleFormSubmit(evt) {
     evt.preventDefault()
@@ -34,22 +37,16 @@ const IndexPage = () => {
       destId: fData.get('destination-station-id')
     }
 
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/path`, {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/path/v2`, {
       token: getCookie('token'),
       params: data
     })
 
-    const path = res.data.path
-
-    console.log(path)
-
-    document.querySelector('#path-result').innerHTML = `<p>Starting at ${data.startId}</p>` +
-    path.map(({ id, trainId }) => {
-      return `<p>to ${id} via IR${trainId}</p>`
-    }).join('')
-    + `<p>Destination at ${data.destId}</p>`
+    
+    setPaths(res.data.pathsArr)
   }
   
+  //? verify token & redirect if invalid
   useEffect(() => {
     const tokenCookie = getCookie('qwe-token')
 
@@ -71,6 +68,7 @@ const IndexPage = () => {
     
   }, [])
 
+  //? fetch stations on page load for autocomplete
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/data/stations`)
     .then(res => {
@@ -127,7 +125,15 @@ const IndexPage = () => {
         <form className='w-full h-1/3' onSubmit={handleFormSubmit}>
           <div className='flex flex-col items-center justify-center gap-8 align-center'>
             <div className='w-5/6 '>
-              <AutocompleteInput refInput={refStartInput} refIdInput={refStartIdInput} handleSelected={handleStartSelected} data={stations} name='start-station' className='w-full h-16 p-4 border rounded-lg focus:outline-none' placeholder='Choose starting station' />
+              <AutocompleteInput 
+                refInput={refStartInput} 
+                refIdInput={refStartIdInput} 
+                handleSelected={handleStartSelected} 
+                data={stations} 
+                name='start-station' 
+                className='w-full h-16 p-4 border rounded-lg focus:outline-none' 
+                placeholder='Choose starting station' 
+              />
             </div>
 
             <div className='w-5/6'>
@@ -139,12 +145,12 @@ const IndexPage = () => {
             <input type="submit" value="Find Route" className='p-5 bg-blue-300 rounded-lg hover:cursor-pointer hover:bg-blue-400'/>
           </div>
         </form>
-
-        {/* path */}
-        <div id='path-result'>
-          
-        </div>
         
+        {/* path */}
+        <PathsDisplay 
+          data = {paths}
+          className='pt-3 h-1/2'
+        />
       </div>
     </div>
   )

@@ -16,10 +16,7 @@ const Map = (props) => {
         // attribution='Map data &copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors, <a href=&quot;https://creativecommons.org/licenses/by-sa/2.0/&quot;>CC-BY-SA</a>, Imagery &copy; <a href=&quot;https://www.mapbox.com/&quot;>Mapbox</a>'
         attribution='SUGI PULA DANI'
       />
-
-      {
-        console.log(props.markers)
-      }
+      
       {
         props.markers.start !== null ? 
         <Marker position={props.markers.start.position}>

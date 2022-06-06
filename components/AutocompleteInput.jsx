@@ -23,7 +23,7 @@ const AutocompleteInput = (props) => {
       setIsDropdownVisible(true)
 
       setDropdownData(matches)
-      console.log(matches)
+      // console.log(matches)
     }
     else {
       setIsDropdownVisible(false)
