@@ -8,7 +8,7 @@ import Image from 'next/image'
 import AutocompleteInput from '../components/AutocompleteInput'
 import Navbar from '../components/Navbar'
 import PathsDisplay from '../components/PathsDisplay'
-
+import DatepickerInput from '../components/DatepickerInput'
 
 const IndexPage = () => {
   const main = useRef()
@@ -139,6 +139,8 @@ const IndexPage = () => {
             <div className='w-5/6'>
               <AutocompleteInput refInput={refDestInput} refIdInput={refDestIdInput} handleSelected={handleDestSelected} data={stations} name='destination-station' className='w-full h-16 p-4 border rounded-lg focus:outline-none' placeholder='Choose destination station'/>
             </div>
+
+            <DatepickerInput />
           </div>
 
           <div className="flex items-center justify-center mt-10">

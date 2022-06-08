@@ -4,7 +4,6 @@ import { setCookies } from 'cookies-next'
 
 import Image from 'next/image'
 
-import '../styles/LoginPage.module.css'
 import LoginStyledInput from '../components/LoginStyledInput'
 import StyledButton from '../components/StyledButton'
 
