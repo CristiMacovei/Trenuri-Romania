@@ -109,7 +109,7 @@ const IndexPage = () => {
   }
   
   return (
-    <div ref={main} className='relative flex-row hidden w-screen h-screen'>
+    <div ref={main} className='relative flex-row hidden w-screen h-screen overflow-hidden'>
       {/* <Image src='/background.jpg' className='relative object-cover' layout='fill' alt='Cainele'/>
        */}
 
@@ -119,32 +119,43 @@ const IndexPage = () => {
       
       <div className='relative w-1/5 h-full'>
         {/* navbar */}
-        <Navbar className='pt-8 h-1/6'/>
+        <Navbar className='py-6'/>
 
         {/* input */}
-        <form className='w-full h-1/3' onSubmit={handleFormSubmit}>
-          <div className='flex flex-col items-center justify-center gap-8 align-center'>
-            <div className='w-5/6 '>
-              <AutocompleteInput 
-                refInput={refStartInput} 
-                refIdInput={refStartIdInput} 
-                handleSelected={handleStartSelected} 
-                data={stations} 
-                name='start-station' 
-                className='w-full h-16 p-4 border rounded-lg focus:outline-none' 
-                placeholder='Choose starting station' 
-              />
+        <form className='w-full' onSubmit={handleFormSubmit}>
+          <div className='h-full w-full flex flex-col gap-3'>
+            <div className='flex flex-col items-center justify-center gap-8 align-center'>
+              <div className='w-5/6'>
+                <DatepickerInput className='w-full p-2 rounded-lg border-0 outline-none focus:outline-none'/>
+                
+                <AutocompleteInput 
+                  refInput={refStartInput} 
+                  refIdInput={refStartIdInput} 
+                  handleSelected={handleStartSelected} 
+                  data={stations} 
+                  name='start-station' 
+                  className='w-full p-4 border rounded-lg focus:outline-none' 
+                  placeholder='Choose starting station' 
+                />
+              </div>
+
+              <div className='w-5/6'>
+                <AutocompleteInput 
+                  refInput={refDestInput} 
+                  refIdInput={refDestIdInput} 
+                  handleSelected={handleDestSelected} 
+                  data={stations} 
+                  name='destination-station' 
+                  className='w-full h-16 p-4 border rounded-lg focus:outline-none' 
+                  placeholder='Choose destination station'
+                />
+              </div>
+
             </div>
 
-            <div className='w-5/6'>
-              <AutocompleteInput refInput={refDestInput} refIdInput={refDestIdInput} handleSelected={handleDestSelected} data={stations} name='destination-station' className='w-full h-16 p-4 border rounded-lg focus:outline-none' placeholder='Choose destination station'/>
+            <div className='flex items-center justify-center'>
+              <input type='submit' value='Find Route' className='p-5 bg-blue-300 rounded-lg hover:cursor-pointer hover:bg-blue-400'/>
             </div>
-
-            <DatepickerInput />
-          </div>
-
-          <div className="flex items-center justify-center mt-10">
-            <input type="submit" value="Find Route" className='p-5 bg-blue-300 rounded-lg hover:cursor-pointer hover:bg-blue-400'/>
           </div>
         </form>
         
