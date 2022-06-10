@@ -3,6 +3,7 @@ import axios from 'axios'
 import { setCookies } from 'cookies-next'
 
 import Image from 'next/image'
+import Link from 'next/link'
 
 import LoginStyledInput from '../components/LoginStyledInput'
 import StyledButton from '../components/StyledButton'
@@ -42,6 +43,14 @@ const SignupPage = () => {
             
             <div className="mx-auto">
               <StyledButton text='Signup'/>
+            </div>
+
+            <div>
+              <Link href='/login'>
+                <span className='text-white underline hover:cursor-pointer'>
+                  Already have an account? Log in instead!
+                </span>
+              </Link>
             </div>
           </div>
         </form>

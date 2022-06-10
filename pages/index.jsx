@@ -3,7 +3,6 @@ import { getCookie } from 'cookies-next'
 import axios from 'axios'
 
 import dynamic from 'next/dynamic'
-import Image from 'next/image'
 
 import AutocompleteInput from '../components/AutocompleteInput'
 import Navbar from '../components/Navbar'
@@ -19,6 +18,7 @@ const IndexPage = () => {
   const refDestInput = useRef()
   const refDestIdInput = useRef()
   
+  const [nightTheme, setNightTheme] = useState(false)
   const [stations, setStations] = useState([])
   const [paths, setPaths] = useState([])
   const [markers, setMarkers] = useState({ start: null, dest: null })
@@ -42,8 +42,14 @@ const IndexPage = () => {
       params: data
     })
 
-    
-    setPaths(res.data.pathsArr)
+    console.log(res)
+
+    if (res.data.status !== 'success') {
+      setPaths([])
+    }
+    else {
+      setPaths(res.data.pathsArr)
+    }
   }
   
   //? verify token & redirect if invalid
@@ -77,7 +83,12 @@ const IndexPage = () => {
   }, [])
 
   function handleStartSelected(evt) {
-    axios.get(`https://nominatim.openstreetmap.org/search.php?q=${refStartInput.current.value}&format=jsonv2`)
+    const name = refStartInput.current.value
+    .replaceAll('Hm.', '').replaceAll('Hm', '').replaceAll('h.', '')
+    .trim()
+    .toLowerCase()
+    
+    axios.get(`https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`)
     .then(res => {
       setMarkers({
         start: {
@@ -93,7 +104,12 @@ const IndexPage = () => {
   }
 
   function handleDestSelected(evt) {
-    axios.get(`https://nominatim.openstreetmap.org/search.php?q=${refDestInput.current.value}&format=jsonv2`)
+    const name = refDestInput.current.value
+    .replaceAll('Hm.', '').replaceAll('Hm', '').replaceAll('h.', '')
+    .trim()
+    .toLowerCase()
+
+    axios.get(`https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`)
     .then(res => {
       setMarkers({
         start: markers.start,
@@ -109,24 +125,21 @@ const IndexPage = () => {
   }
   
   return (
-    <div ref={main} className='relative flex-row hidden w-screen h-screen overflow-hidden'>
-      {/* <Image src='/background.jpg' className='relative object-cover' layout='fill' alt='Cainele'/>
-       */}
-
+    <div ref={main} className={'relative flex-row hidden w-screen h-screen overflow-hidden'}>
       <div className='w-4/5 h-screen'>
         <MapWithNoSSR markers={markers}/>
       </div>
       
-      <div className='relative w-1/5 h-full'>
+      <div className={`${nightTheme ? 'bg-gray-700' : 'bg-white'} relative flex flex-col justify-center w-1/5 h-full`}>
         {/* navbar */}
         <Navbar className='py-6'/>
 
         {/* input */}
         <form className='w-full' onSubmit={handleFormSubmit}>
-          <div className='h-full w-full flex flex-col gap-3'>
+          <div className='flex flex-col w-full h-full gap-3'>
             <div className='flex flex-col items-center justify-center gap-8 align-center'>
               <div className='w-5/6'>
-                <DatepickerInput className='w-full p-2 rounded-lg border-0 outline-none focus:outline-none'/>
+                <DatepickerInput className='w-full p-2 border-0 rounded-lg outline-none focus:outline-none'/>
                 
                 <AutocompleteInput 
                   refInput={refStartInput} 

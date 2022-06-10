@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 import AirDatepicker from 'air-datepicker'
 import 'air-datepicker/air-datepicker.css'
@@ -53,10 +53,10 @@ const DatepickerInput = ({ className, onSelect }) => {
           <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
         
-        <input className='p-4' ref={refInput} onClick={mHandleClick} type='text' placeholder='Choose travel date' readOnly/>
+        <input className='p-4 rounded-lg' ref={refInput} onClick={mHandleClick} type='text' placeholder='Choose travel date' readOnly/>
       </div>
 
-      <div ref={refDatepicker} className={isOpen ? 'absolute mt-2' : 'hidden'}>
+      <div ref={refDatepicker} className={isOpen ? 'absolute mt-2 z-10' : 'hidden'}>
 
       </div>
     </div>
