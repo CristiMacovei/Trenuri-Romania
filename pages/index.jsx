@@ -38,8 +38,10 @@ const IndexPage = () => {
     }
 
     const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/path/v2`, {
-      token: getCookie('token'),
-      params: data
+      params: data,
+      headers: {
+        'Authorization': getCookie('qwe-token')
+      }
     })
 
     console.log(res)
@@ -83,6 +85,8 @@ const IndexPage = () => {
   }, [])
 
   function handleStartSelected(evt) {
+    setPaths([])
+    
     const name = refStartInput.current.value
     .replaceAll('Hm.', '').replaceAll('Hm', '').replaceAll('h.', '')
     .trim()
@@ -104,6 +108,8 @@ const IndexPage = () => {
   }
 
   function handleDestSelected(evt) {
+    setPaths([])
+    
     const name = refDestInput.current.value
     .replaceAll('Hm.', '').replaceAll('Hm', '').replaceAll('h.', '')
     .trim()
@@ -126,7 +132,7 @@ const IndexPage = () => {
   
   return (
     <div ref={main} className={'relative flex-row hidden w-screen h-screen overflow-hidden'}>
-      <div className='w-4/5 h-screen'>
+      <div className='z-10 w-4/5 h-screen'>
         <MapWithNoSSR markers={markers}/>
       </div>
       

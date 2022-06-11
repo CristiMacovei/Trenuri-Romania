@@ -21,6 +21,10 @@ const PathsDisplay = (props) => {
     setIsExpanded(true)
   }
 
+  useEffect(() => {
+    setIsExpanded(false)
+  }, [props.data])
+
   return (
     <div className={props.className}>
       {

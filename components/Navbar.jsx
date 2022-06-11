@@ -1,12 +1,16 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 
 import { removeCookies, getCookie } from 'cookies-next'
 
 import ModalButton from './ModalButton'
 import axios from 'axios'
+import StyledButton from './StyledButton'
 
 const Navbar = (props) => {
   const refAccountSpan = useRef()
+  const refHistory = useRef()
+
+  const [history, setHistory] = useState([])
 
   function logOut() {
     removeCookies('qwe-token')
@@ -30,34 +34,71 @@ const Navbar = (props) => {
     })
   }, [])
 
+  async function fetchHistory() {
+    const token = getCookie('qwe-token')
+
+    console.log('FUTUTI MORTII MATII')
+
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/history`, {
+      headers: {
+        Authorization: token
+      }
+    })
+    
+    if (res.data.status === 'success') {
+      setHistory(res.data.history)
+    }
+  }
+
+  useEffect(() => {
+    fetchHistory()
+  })
+
   return (
     <nav className={props.className}>
-      <div className="relative flex items-center justify-around w-full">
+      <div className="flex items-center justify-around w-full">
         <div>
-          <ModalButton modalLeft='left-2'>
+          <ModalButton effect={fetchHistory} modalLeft='left-2'>
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
 
-            <div className='flex flex-col items-center justify-between h-16 w-36 left'>
-              <div>
-                <span ref={refAccountSpan}> Fetching account details... </span>
-              </div>
+            <div className='flex flex-col items-center justify-between gap-8 px-10 py-6 bg-white rounded-md'>
+              <span className='block text-lg' ref={refAccountSpan}> Fetching account details... </span>
 
-              <button className='mx-auto underline hover:cursor-pointer' onClick={logOut}>Log out</button>
+              <StyledButton className='bg-blue-600' onClick={logOut} text='Log out'/>
             </div>
           </ModalButton>
         </div>
 
         <div>
           <div className="flex items-center gap-4">
-            <ModalButton>
+            <ModalButton ref={refHistory}>
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
               </svg>
 
-              <div>
-                History
+              <div className='flex flex-col items-center justify-between gap-8 px-6 py-10 overflow-x-hidden overflow-y-auto bg-white rounded-md max-h-64'>
+                <span className='block text-lg'> Search History </span>
+
+                <div className="flex flex-col items-center gap-6">
+                  {
+                    history.reverse()
+                    .map(item => {
+                      return (
+                        <div key='' className='flex items-center justify-between gap-6 pb-2 border-b border-zinc-300 hover:cursor-pointer'>
+                          <span className='block text-md'> {item.origin} </span>
+                          
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+
+                          <span className='block text-md'> {item.destination} </span>
+                        </div>
+                      )
+                    })
+                  }
+                </div>
               </div>
             </ModalButton>
 
