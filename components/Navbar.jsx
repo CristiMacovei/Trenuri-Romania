@@ -37,8 +37,6 @@ const Navbar = (props) => {
   async function fetchHistory() {
     const token = getCookie('qwe-token')
 
-    console.log('FUTUTI MORTII MATII')
-
     const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/history`, {
       headers: {
         Authorization: token
@@ -52,7 +50,7 @@ const Navbar = (props) => {
 
   useEffect(() => {
     fetchHistory()
-  })
+  }, [])
 
   return (
     <nav className={props.className}>
