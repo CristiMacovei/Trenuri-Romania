@@ -25,6 +25,7 @@ const Navbar = (props) => {
       token
     })
     .then(res => {
+      console.log(res.data)
       if (res.data.status === 'success') {
         refAccountSpan.current.innerHTML = `Logged in as ${res.data.user.username}`
       }

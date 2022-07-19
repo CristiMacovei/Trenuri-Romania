@@ -8,7 +8,17 @@ const AutocompleteInput = (props) => {
   const idInput = useRef()
   const dropdown = useRef()
 
-  function handleChange(evt) {
+  function handleChange(evt) {    
+    //* remove markers on change evt
+    if (typeof props.fParentRemoveMarker === 'function') {
+      props.fParentRemoveMarker();
+    }
+
+    //* remove paths on change evt
+    if (typeof props.fParentRemovePaths === 'function') {
+      props.fParentRemovePaths();
+    }
+    
     if (evt.target.value.length === 0) {
       setIsDropdownVisible(false) 
 

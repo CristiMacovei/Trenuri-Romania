@@ -12,7 +12,6 @@ import DatepickerInput from '../components/DatepickerInput'
 const IndexPage = () => {
   const main = useRef()
   
-  const refPaths = useRef()
   const refStartInput = useRef()
   const refStartIdInput = useRef()
   const refDestInput = useRef()
@@ -26,6 +25,10 @@ const IndexPage = () => {
   const MapWithNoSSR = dynamic(() => import("../components/Map"), {
     ssr: false
   });
+
+  function removePaths() {
+    setPaths([]);
+  }
 
   async function handleFormSubmit(evt) {
     evt.preventDefault()
@@ -129,6 +132,30 @@ const IndexPage = () => {
       console.log(err)
     })
   }
+
+  function removeMarkers() {
+    if (markers.start === null && markers.dest === null) {
+      return;
+    }
+    
+    setMarkers({ start: null, dest: null });
+  }
+
+  function removeStartMarker() {
+    if (markers.start === null) {
+      return;
+    }
+
+    setMarkers({ start: null, dest: markers.dest });
+  }
+
+  function removeDestMarker() {
+    if (markers.dest === null) {
+      return;
+    }
+
+    setMarkers({ start: markers.start, dest: null });
+  }
   
   return (
     <div ref={main} className={'relative flex-row hidden w-screen h-screen overflow-hidden'}>
@@ -150,7 +177,9 @@ const IndexPage = () => {
                 <AutocompleteInput 
                   refInput={refStartInput} 
                   refIdInput={refStartIdInput} 
-                  handleSelected={handleStartSelected} 
+                  handleSelected={handleStartSelected}
+                  fParentRemoveMarker={removeStartMarker}
+                  fParentRemovePaths={removePaths}
                   data={stations} 
                   name='start-station' 
                   className='w-full p-4 border rounded-lg focus:outline-none' 
@@ -163,6 +192,8 @@ const IndexPage = () => {
                   refInput={refDestInput} 
                   refIdInput={refDestIdInput} 
                   handleSelected={handleDestSelected} 
+                  fParentRemoveMarker={removeDestMarker}
+                  fParentRemovePaths={removePaths}
                   data={stations} 
                   name='destination-station' 
                   className='w-full h-16 p-4 border rounded-lg focus:outline-none' 

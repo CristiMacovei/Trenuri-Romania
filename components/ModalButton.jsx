@@ -20,8 +20,6 @@ const ModalButton = (props) => {
     if (!isOpen) {
       setIsOpen(true)
 
-      console.log(props.effect)
-
       if (typeof props.effect === 'function') {
         props.effect()
       }
