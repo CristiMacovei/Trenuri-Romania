@@ -25,8 +25,8 @@ const AutocompleteInput = (props) => {
       return
     }
 
-    const matches = props.data.filter(({ stationId, stationName }) => {
-      return stationName.toLowerCase().startsWith(evt.target.value.toLowerCase())
+    const matches = props.data.filter(({ stationId, compressedName }) => {
+      return compressedName.startsWith(props.fParentCompressName(evt.target.value.toLowerCase()))
     })
 
     if (matches.length !== 0) {

@@ -28,6 +28,10 @@ const IndexPage = () => {
     ssr: false
   });
 
+  function compressName(string) {
+    return string.toLowerCase().replaceAll(' ', '').replaceAll('.', '').replaceAll('â', 'a').replaceAll('ă', 'a').replaceAll('î', 'i').replaceAll('ș', 's').replaceAll('ş', 's').replaceAll('ț', 't').replaceAll('ţ', 't');
+  }
+
   function removePaths() {
     setPaths([]);
   }
@@ -84,8 +88,11 @@ const IndexPage = () => {
   //? fetch stations on page load for autocomplete
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/data/stations`)
-    .then(res => {
-      setStations(res.data.stations)
+    .then(res => {      
+      setStations(res.data.stations.map(i => ({
+        ...i,
+        compressedName: compressName(i.stationName)
+      })))
     })
   }, [])
 
@@ -197,6 +204,7 @@ const IndexPage = () => {
                       handleSelected={handleStartSelected}
                       fParentRemoveMarker={removeStartMarker}
                       fParentRemovePaths={removePaths}
+                      fParentCompressName={compressName}
                       data={stations} 
                       name='start-station' 
                       className='w-full p-4 border rounded-lg focus:outline-none' 
@@ -211,6 +219,7 @@ const IndexPage = () => {
                       handleSelected={handleDestSelected} 
                       fParentRemoveMarker={removeDestMarker}
                       fParentRemovePaths={removePaths}
+                      fParentCompressName={compressName}
                       data={stations} 
                       name='destination-station' 
                       className='w-full h-16 p-4 border rounded-lg focus:outline-none' 
