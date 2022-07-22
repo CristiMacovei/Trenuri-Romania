@@ -1,26 +1,28 @@
-import { useRef, useEffect, useState, useMemo } from 'react'
-import { getCookie } from 'cookies-next'
-import axios from 'axios'
+import { useRef, useEffect, useState, useMemo } from 'react';
+import { getCookie } from 'cookies-next';
+import axios from 'axios';
 
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 
-import AutocompleteInput from '../components/AutocompleteInput'
-import Navbar from '../components/Navbar'
-import PathsDisplay from '../components/PathsDisplay'
-import DatepickerInput from '../components/DatepickerInput'
+import AutocompleteInput from '../components/AutocompleteInput';
+import Navbar from '../components/Navbar';
+import PathsDisplay from '../components/PathsDisplay';
+import PathDetails from '../components/PathDetails';
+import DatepickerInput from '../components/DatepickerInput';
 
 const IndexPage = () => {
-  const main = useRef()
+  const main = useRef();
   
-  const refStartInput = useRef()
-  const refStartIdInput = useRef()
-  const refDestInput = useRef()
-  const refDestIdInput = useRef()
+  const refStartInput = useRef();
+  const refStartIdInput = useRef();
+  const refDestInput = useRef();
+  const refDestIdInput = useRef();
   
-  const [nightTheme, setNightTheme] = useState(false)
-  const [stations, setStations] = useState([])
-  const [paths, setPaths] = useState([])
-  const [markers, setMarkers] = useState({ start: null, dest: null })
+  const [nightTheme, setNightTheme] = useState(false);
+  const [stations, setStations] = useState([]);
+  const [paths, setPaths] = useState([]);
+  const [markers, setMarkers] = useState({ start: null, dest: null });
+  const [selectedPath, setSelectedPath] = useState(null);
 
   const MapWithNoSSR = dynamic(() => import("../components/Map"), {
     ssr: false
@@ -159,61 +161,79 @@ const IndexPage = () => {
   
   return (
     <div ref={main} className={'relative flex-row hidden w-screen h-screen overflow-hidden'}>
-      <div className='z-10 w-4/5 h-screen'>
-        <MapWithNoSSR markers={markers}/>
+      <div className='z-10 w-3/4 h-screen'>
+        <MapWithNoSSR markers={markers} selectedPath={selectedPath}/>
       </div>
       
-      <div className={`${nightTheme ? 'bg-gray-700' : 'bg-white'} relative flex flex-col justify-center w-1/5 h-full`}>
-        {/* navbar */}
-        <Navbar className='py-6'/>
+      <div className={`${nightTheme ? 'bg-gray-700' : 'bg-white'} relative flex flex-col justify-center w-1/4 h-full`}>
+        {
+          //* if there's a path selected, display info about that specific path, otherwise display the default interface
+        }
+        {
+          selectedPath !== null ?
+          <>
+            <PathDetails 
+              path={selectedPath}
+              fParentSelectPath={setSelectedPath}
+              fParentRemoveMarkers={removeMarkers}
+              fParentRemovePaths={removePaths}
+            />
+          </>
+          :
+          <>
+            {/* navbar */}
+            <Navbar className='py-6'/>
 
-        {/* input */}
-        <form className='w-full' onSubmit={handleFormSubmit}>
-          <div className='flex flex-col w-full h-full gap-3'>
-            <div className='flex flex-col items-center justify-center gap-8 align-center'>
-              <div className='w-5/6'>
-                <DatepickerInput className='w-full p-2 border-0 rounded-lg outline-none focus:outline-none'/>
-                
-                <AutocompleteInput 
-                  refInput={refStartInput} 
-                  refIdInput={refStartIdInput} 
-                  handleSelected={handleStartSelected}
-                  fParentRemoveMarker={removeStartMarker}
-                  fParentRemovePaths={removePaths}
-                  data={stations} 
-                  name='start-station' 
-                  className='w-full p-4 border rounded-lg focus:outline-none' 
-                  placeholder='Choose starting station' 
-                />
+            {/* input */}
+            <form className='w-full' onSubmit={handleFormSubmit}>
+              <div className='flex flex-col w-full h-full gap-3'>
+                <div className='flex flex-col items-center justify-center gap-8 align-center'>
+                  <div className='w-5/6'>
+                    <DatepickerInput className='w-full p-2 border-0 rounded-lg outline-none focus:outline-none'/>
+                    
+                    <AutocompleteInput 
+                      refInput={refStartInput} 
+                      refIdInput={refStartIdInput} 
+                      handleSelected={handleStartSelected}
+                      fParentRemoveMarker={removeStartMarker}
+                      fParentRemovePaths={removePaths}
+                      data={stations} 
+                      name='start-station' 
+                      className='w-full p-4 border rounded-lg focus:outline-none' 
+                      placeholder='Choose starting station' 
+                    />
+                  </div>
+
+                  <div className='w-5/6'>
+                    <AutocompleteInput 
+                      refInput={refDestInput} 
+                      refIdInput={refDestIdInput} 
+                      handleSelected={handleDestSelected} 
+                      fParentRemoveMarker={removeDestMarker}
+                      fParentRemovePaths={removePaths}
+                      data={stations} 
+                      name='destination-station' 
+                      className='w-full h-16 p-4 border rounded-lg focus:outline-none' 
+                      placeholder='Choose destination station'
+                    />
+                  </div>
+
+                </div>
+
+                <div className='flex items-center justify-center'>
+                  <input type='submit' value='Find Route' className='p-5 bg-blue-300 rounded-lg hover:cursor-pointer hover:bg-blue-400'/>
+                </div>
               </div>
-
-              <div className='w-5/6'>
-                <AutocompleteInput 
-                  refInput={refDestInput} 
-                  refIdInput={refDestIdInput} 
-                  handleSelected={handleDestSelected} 
-                  fParentRemoveMarker={removeDestMarker}
-                  fParentRemovePaths={removePaths}
-                  data={stations} 
-                  name='destination-station' 
-                  className='w-full h-16 p-4 border rounded-lg focus:outline-none' 
-                  placeholder='Choose destination station'
-                />
-              </div>
-
-            </div>
-
-            <div className='flex items-center justify-center'>
-              <input type='submit' value='Find Route' className='p-5 bg-blue-300 rounded-lg hover:cursor-pointer hover:bg-blue-400'/>
-            </div>
-          </div>
-        </form>
-        
-        {/* path */}
-        <PathsDisplay 
-          data = {paths}
-          className='pt-3 h-1/2'
-        />
+            </form>
+            
+            {/* show paths found */}
+            <PathsDisplay 
+              data = {paths}
+              className='pt-3 h-1/2'
+              fParentSelectPath={setSelectedPath}
+            />
+          </>
+        }
       </div>
     </div>
   )

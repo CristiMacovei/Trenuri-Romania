@@ -1,9 +1,14 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker, Rectangle } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
+import { useEffect } from "react";
 
 const Map = (props) => {
+  useEffect(() => {
+
+  }, [props.selectedPath]);
+
   return (
     <MapContainer
       center={[45.9432, 24.9668]}
@@ -35,6 +40,30 @@ const Map = (props) => {
         </Marker> 
         : null
       }
+
+      {
+        props.markers.start !== null && props.markers.dest !== null ? 
+        <Polyline
+          positions={[props.markers.start.position, props.markers.dest.position]}
+          color='red'
+        />
+        : null
+      }
+
+      {
+        typeof props.selectedPath?.length !== 'undefined' && props.selectedPath.length !== 0 ? 
+        (
+          <span>
+            {
+              props.selectedPath.toString()
+            }
+          </span>
+        )
+        : null
+      }
+
+
+      
     </MapContainer>
   );
 };
