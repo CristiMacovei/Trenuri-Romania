@@ -40,9 +40,11 @@ const AutocompleteInput = (props) => {
     }
   }
 
-  function setValue(id, name) {
-    props.refInput.current.value = name
-    props.refIdInput.current.value = id
+  function setValue(id, name, lat, lon) {
+    props.refInput.current.value = name;
+    props.refIdInput.current.value = id;
+    props.refLatInput.current.value = lat;
+    props.refLonInput.current.value = lon;
 
     setIsDropdownVisible(false)
 
@@ -69,11 +71,23 @@ const AutocompleteInput = (props) => {
         ref={props.refIdInput}
       />
 
+      <input type="number"
+        name={props.name + '-lat'} 
+        className='hidden'
+        ref={props.refLatInput}
+      />
+
+      <input type="number"
+        name={props.name + '-lon'}
+        className='hidden'
+        ref={props.refLonInput}
+      />
+
       <div className={isDropdownVisible ? 'border border-zinc-200 rounded-lg absolute flex flex-col gap-4 mt-8 ml-4 w-64 p-4 max-h-96 overflow-y-auto z-20 bg-white' : 'hidden'} ref={dropdown}>
         {
-          dropdownData.map(( { stationId, stationName } ) => {
+          dropdownData.map(( { stationId, stationName, latitude, longitude } ) => {
             return (
-              <div key={stationId} data-id={stationId} className='p-2 hover:cursor-pointer hover:bg-gray-100' onClick={function() { setValue(stationId, stationName) }}>
+              <div key={stationId} className='p-2 hover:cursor-pointer hover:bg-gray-100' onClick={function() { setValue(stationId, stationName, latitude, longitude) }}>
                 {stationName}
               </div>
             )

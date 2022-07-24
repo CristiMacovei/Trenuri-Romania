@@ -15,14 +15,21 @@ const IndexPage = () => {
   
   const refStartInput = useRef();
   const refStartIdInput = useRef();
+  const refStartLatInput = useRef();
+  const refStartLonInput = useRef();
+
   const refDestInput = useRef();
   const refDestIdInput = useRef();
+  const refDestLatInput = useRef();
+  const refDestLonInput = useRef();
   
   const [nightTheme, setNightTheme] = useState(false);
   const [stations, setStations] = useState([]);
   const [paths, setPaths] = useState([]);
   const [markers, setMarkers] = useState({ start: null, dest: null });
   const [selectedPath, setSelectedPath] = useState(null);
+  const [markerColor, setMarkerColor] = useState('#ff0000');
+  const [detailsColor, setDetailsColor] = useState('#00ff00');
 
   const MapWithNoSSR = dynamic(() => import("../components/Map"), {
     ssr: false
@@ -97,49 +104,27 @@ const IndexPage = () => {
   }, [])
 
   function handleStartSelected(evt) {
-    setPaths([])
-    
-    const name = refStartInput.current.value
-    .replaceAll('Hm.', '').replaceAll('Hm', '').replaceAll('h.', '')
-    .trim()
-    .toLowerCase()
-    
-    axios.get(`https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`)
-    .then(res => {
-      setMarkers({
-        start: {
-          position: [res.data[0].lat, res.data[0].lon],
-          name: res.data[0].display_name
-        },
-        dest: markers.dest
-      })
-    })
-    .catch(err => {
-      console.log(err)
-    })
+    setPaths([]);
+
+    setMarkers({
+      start: {
+        position: [refStartLatInput.current.value, refStartLonInput.current.value],
+        name: refStartInput.current.value
+      },
+      dest: markers.dest
+    });
   }
 
   function handleDestSelected(evt) {
-    setPaths([])
+    setPaths([]);
     
-    const name = refDestInput.current.value
-    .replaceAll('Hm.', '').replaceAll('Hm', '').replaceAll('h.', '')
-    .trim()
-    .toLowerCase()
-
-    axios.get(`https://nominatim.openstreetmap.org/search.php?q=${name}&format=jsonv2`)
-    .then(res => {
-      setMarkers({
-        start: markers.start,
-        dest: {
-          position: [res.data[0].lat, res.data[0].lon],
-          name: res.data[0].display_name
-        }
-      })
-    })
-    .catch(err => {
-      console.log(err)
-    })
+    setMarkers({
+      start: markers.start,
+      dest: {
+        position: [refDestLatInput.current.value, refDestLonInput.current.value],
+        name: refDestInput.current.value
+      }
+    });
   }
 
   function removeMarkers() {
@@ -169,7 +154,12 @@ const IndexPage = () => {
   return (
     <div ref={main} className={'relative flex-row hidden w-screen h-screen overflow-hidden'}>
       <div className='z-10 w-3/4 h-screen'>
-        <MapWithNoSSR markers={markers} selectedPath={selectedPath}/>
+        <MapWithNoSSR 
+          markers={markers} 
+          selectedPath={selectedPath}
+          markerColor={markerColor}
+          detailsColor={detailsColor}
+        />
       </div>
       
       <div className={`${nightTheme ? 'bg-gray-700' : 'bg-white'} relative flex flex-col justify-center w-1/4 h-full`}>
@@ -189,10 +179,16 @@ const IndexPage = () => {
           :
           <>
             {/* navbar */}
-            <Navbar className='py-6'/>
+            <Navbar 
+              className='py-6'
+              fParentSetMapMarkerColor={setMarkerColor}
+              pParentMarkerColor={markerColor}
+              fParentSetMapDetailsColor={setDetailsColor}
+              pParentMapDetailsColor={detailsColor}
+            />
 
             {/* input */}
-            <form className='w-full' onSubmit={handleFormSubmit}>
+            <form className='w-full' onSubmit={handleFormSubmit} noValidate={true}>
               <div className='flex flex-col w-full h-full gap-3'>
                 <div className='flex flex-col items-center justify-center gap-8 align-center'>
                   <div className='w-5/6'>
@@ -200,7 +196,9 @@ const IndexPage = () => {
                     
                     <AutocompleteInput 
                       refInput={refStartInput} 
-                      refIdInput={refStartIdInput} 
+                      refIdInput={refStartIdInput}
+                      refLatInput={refStartLatInput} 
+                      refLonInput={refStartLonInput}
                       handleSelected={handleStartSelected}
                       fParentRemoveMarker={removeStartMarker}
                       fParentRemovePaths={removePaths}
@@ -215,7 +213,9 @@ const IndexPage = () => {
                   <div className='w-5/6'>
                     <AutocompleteInput 
                       refInput={refDestInput} 
-                      refIdInput={refDestIdInput} 
+                      refIdInput={refDestIdInput}
+                      refLatInput={refDestLatInput}
+                      refLonInput={refDestLonInput}
                       handleSelected={handleDestSelected} 
                       fParentRemoveMarker={removeDestMarker}
                       fParentRemovePaths={removePaths}

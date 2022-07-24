@@ -3,11 +3,27 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
 import { useEffect } from "react";
+import { divIcon } from "leaflet";
+import {renderToStaticMarkup} from "react-dom/server";
 
 const Map = (props) => {
   useEffect(() => {
+    if (props.selectedPath === null) {
+      return;
+    }
 
+    console.log(props.selectedPath.path.filter(stop => typeof stop?.latitude !== 'undefined' && typeof stop?.longitude !== 'undefined').map(stop => ([stop.name, parseFloat(stop.latitude), parseFloat(stop.longitude)])));
   }, [props.selectedPath]);
+
+  const customIcon = divIcon({
+    html: renderToStaticMarkup(
+      <span>
+        <svg xmlns="http://www.w3.org/2000/svg" className="absolute w-8 h-8" viewBox="0 0 20 20" fill={typeof props.markerColor !== 'string' ? 'red' : props.markerColor}>
+          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+        </svg>
+      </span>
+    )
+  })
 
   return (
     <MapContainer
@@ -23,8 +39,8 @@ const Map = (props) => {
       
       {
         props.markers.start !== null ? 
-        <Marker position={props.markers.start.position}>
-          <Popup style={{ backgroundColor: 'red'}}>
+        <Marker position={props.markers.start.position} icon={customIcon}>
+          <Popup >
             starting from {props.markers.start.name}
           </Popup>
         </Marker> 
@@ -33,7 +49,7 @@ const Map = (props) => {
 
       {
         props.markers.dest !== null ? 
-        <Marker position={props.markers.dest.position}>
+        <Marker position={props.markers.dest.position} icon={customIcon}>
           <Popup>
             destination {props.markers.dest.name}
           </Popup>
@@ -45,19 +61,29 @@ const Map = (props) => {
         props.markers.start !== null && props.markers.dest !== null ? 
         <Polyline
           positions={[props.markers.start.position, props.markers.dest.position]}
-          color='red'
+          color={typeof props.markerColor === 'string' ? props.markerColor : '#0f0'}
         />
         : null
       }
 
       {
-        typeof props.selectedPath?.length !== 'undefined' && props.selectedPath.length !== 0 ? 
+        typeof props.selectedPath?.path?.length !== 'undefined' && props.selectedPath?.path?.length !== 0 ? 
         (
-          <span>
-            {
-              props.selectedPath.toString()
+          props.selectedPath.path.filter(stop => typeof stop?.latitude !== 'undefined' && typeof stop?.longitude !== 'undefined').map(stop => ([parseFloat(stop.latitude), parseFloat(stop.longitude)])).map(
+            ([lat, lon], index, array) => {
+              if (index === 0) {
+                return null;
+              }
+
+              return (
+                <Polyline
+                  key={`polyline-${index}`}
+                  positions={[array[index - 1], [lat, lon]]}
+                  color={typeof props.detailsColor === 'string' ? props.detailsColor : 'green'}
+                />
+              )
             }
-          </span>
+          )
         )
         : null
       }

@@ -5,6 +5,7 @@ import { removeCookies, getCookie } from 'cookies-next'
 import ModalButton from './ModalButton'
 import axios from 'axios'
 import StyledButton from './StyledButton'
+import ColorInput from './ColorInput'
 
 const Navbar = (props) => {
   const refAccountSpan = useRef()
@@ -47,6 +48,24 @@ const Navbar = (props) => {
     if (res.data.status === 'success') {
       setHistory(res.data.history)
     }
+  }
+
+  function handleMarkerColorChange(evt) {
+    evt.preventDefault();
+
+    console.log(evt.target.value);
+
+    if (typeof props.fParentSetMapMarkerColor === 'function') {
+      props.fParentSetMapMarkerColor(evt.target.value);    }
+  }
+
+  function handleDetailsColorChange(evt) {
+    evt.preventDefault();
+
+    console.log(evt.target.value);
+
+    if (typeof props.fParentSetMapDetailsColor === 'function') {
+      props.fParentSetMapDetailsColor(evt.target.value);    }
   }
 
   useEffect(() => {
@@ -108,8 +127,20 @@ const Navbar = (props) => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
 
-              <div>
-                Settings
+              <div className='flex flex-col items-center justify-between gap-8 px-6 py-10 overflow-x-hidden overflow-y-auto bg-white rounded-md max-h-64'>
+                <span className='block text-lg'> Settings </span>
+
+                <ColorInput
+                  pText='Map marker color'
+                  pValue={props.pParentMarkerColor}
+                  fParentHandleChangeEvent={handleMarkerColorChange}
+                />
+
+                <ColorInput
+                  pText='Detailed view color'
+                  pValue={props.pParentMapDetailsColor}
+                  fParentHandleChangeEvent={handleDetailsColorChange}
+                />
               </div>
             </ModalButton>
             

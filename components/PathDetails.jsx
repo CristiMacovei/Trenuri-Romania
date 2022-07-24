@@ -98,7 +98,7 @@ const PathDetails = (props) => {
         <span className='text-xl'> Train Info </span>
 
         <div className="w-full px-10 pt-8 text-left">
-          <span className='text-lg'>Switching through {trains.length} trains</span>
+          <span className='text-lg'>{trains.length === 1 ? 'Direct route' : `Switching through ${trains.length} trains`}</span>
 
           <div className='flex flex-col items-start w-full pt-4'>
             {
@@ -110,7 +110,14 @@ const PathDetails = (props) => {
                       {
                         ranges.map((range, index) => {
                           return (
-                            <span key={`range-${index}`}> {convertSecondsToTime(range.start)} - {convertSecondsToTime(range.end)}</span>
+                            <>
+                              {
+                                index > 0 ? 
+                                <span>&nbsp;|&nbsp; </span>
+                                : null
+                              }
+                              <span key={`range-${index}`}> {convertSecondsToTime(range.start)} - {convertSecondsToTime(range.end)}</span>
+                            </>
                           )
                         })
                       }
