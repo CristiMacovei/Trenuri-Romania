@@ -1,7 +1,5 @@
-import React from 'react'
-
-export default function color(props) {
-
+//* this component is used in the settings menu, when the user selects their desired colors for the map markers and detailed views
+const ColorInput = (props) => {
   return (
     <>
       <div className="flex items-center justify-center gap-3">
@@ -11,3 +9,5 @@ export default function color(props) {
     </>
   )
 }
+
+export default ColorInput;

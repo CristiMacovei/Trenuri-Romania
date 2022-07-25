@@ -1,21 +1,29 @@
-import React, {useEffect, useState} from 'react'
+//* import hooks from the react framework
+import {useEffect, useState} from 'react';
 
+//* this component is used when a specific path is opened in detailed view
 const PathDetails = (props) => {
+  //* create a state for the trains array
+  //* this state is initialised with an empty array since the trains will be written dynamically once the page is rendered
   const [trains, setTrains] = useState([]);
 
+  //* write the train data to the 'trains' state
   useEffect(() => {
-    console.log(props.path);
-
-    let firstTrain = props.path.path[0].trainId;
-
+    //* start out with an empty map
+    //* this maps every train id to its corresponding hour ranges
     let map = new Map();
+    
+    //* get the first train separately
+    let firstTrain = props.path.path[0].trainId;
 
     let prevTrain = firstTrain;
     let prevStart = props.path.departureTime;
+    //* loop through all the stations starting with the second
     for (let i = 1; i < props.path.path.length; i++) {
       let cTrain = props.path.path[i].trainId;
 
       if (cTrain !== prevTrain) {
+        //* if the train changes between two stations, save the first train's range and begin a new range with the second train
         let endTime = props.path.path[i - 1].time;
         if (i === props.path.path.length - 1) {
           endTime = props.path.arrivalTime;
@@ -33,6 +41,7 @@ const PathDetails = (props) => {
 
         map.set(prevTrain, prevRanges);
 
+        //* update prev variables 
         prevTrain = cTrain;
         prevStart = props.path.path[i - 1].time;
       }
@@ -42,23 +51,26 @@ const PathDetails = (props) => {
     
   }, [props.path]);
 
-  //? converts time given from the API to a more readable format
+  //* this function converts millisecond time given from the API to a more readable format
   function convertSecondsToTime(seconds) {
-    const MINUTE = 60
-    const HOUR = 60 * MINUTE
-    const DAY = 24 * HOUR
+    const MINUTE = 60;
+    const HOUR = 60 * MINUTE;
+    const DAY = 24 * HOUR;
 
-    const days = Math.floor(seconds / DAY)
-    const hours = Math.floor((seconds % DAY) / HOUR)
-    const minutes = Math.floor((seconds % HOUR) / MINUTE)
-    const secondsLeft = Math.floor(seconds % MINUTE)
+    const days = Math.floor(seconds / DAY);
+    const hours = Math.floor((seconds % DAY) / HOUR);
+    const minutes = Math.floor((seconds % HOUR) / MINUTE);
+    const secondsLeft = Math.floor(seconds % MINUTE);
 
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${days === 0 ? '' : `(+${days}d)`}`
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${days === 0 ? '' : `(+${days}d)`}`;
   }
 
+  //* this function fires when the 'Close' button is clicked 
+  //* removes all data from the current path and returns the user to the home page
   function resetPath(evt) {
     evt.preventDefault();
 
+    //* remove markers
     if (typeof props.fParentRemoveMarkers === 'function') {
       props.fParentRemoveMarkers();
     }
@@ -66,6 +78,7 @@ const PathDetails = (props) => {
       console.log('fParentRemoveMarkers is not a function');
     }
 
+    //* remove previous search results
     if (typeof props.fParentRemovePaths === 'function') {
       props.fParentRemovePaths();
     }
@@ -73,6 +86,7 @@ const PathDetails = (props) => {
       console.log('fParentRemovePaths is not a function');
     }
     
+    //* remove selected path
     if (typeof props.fParentSelectPath === 'function') {
       props.fParentSelectPath(null);
     }
@@ -102,6 +116,7 @@ const PathDetails = (props) => {
 
           <div className='flex flex-col items-start w-full pt-4'>
             {
+              //* this div shows the train data
               trains.map(([trainId, ranges], index) => {
                 return (
                   <div className='flex flex-col w-full py-3' key={`train-${index}`}>
@@ -148,6 +163,7 @@ const PathDetails = (props) => {
 
           <div className="flex flex-col w-full gap-5 pt-4">
             {
+              //* this div shows a list of stations
               props.path.path.map((cStation, index, array) => {
                 return (
                   index >= 1 ? (

@@ -1,29 +1,37 @@
-import { useState, useEffect } from 'react'
+//* import hooks from the react framework
+import { useState, useEffect } from 'react';
 
+//* this component is used to display the search results in the homepage trip interface 
 const PathsDisplay = (props) => {
-  const [isExpanded, setIsExpanded] = useState(false)
+  //* create a state for whether the display is expanded
+  //* initially it is not, showing only 3 paths (the fastest ones)
+  //* if the user wishes to see more paths, they can click the 'View more' button and see all the paths
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  //? converts time given from the API to a more readable format
+  //* converts the millisecond time given from the API to a more readable format
   function convertSecondsToTime(seconds) {
-    const MINUTE = 60
-    const HOUR = 60 * MINUTE
-    const DAY = 24 * HOUR
+    const MINUTE = 60;
+    const HOUR = 60 * MINUTE;
+    const DAY = 24 * HOUR;
 
-    const days = Math.floor(seconds / DAY)
-    const hours = Math.floor((seconds % DAY) / HOUR)
-    const minutes = Math.floor((seconds % HOUR) / MINUTE)
-    const secondsLeft = Math.floor(seconds % MINUTE)
+    const days = Math.floor(seconds / DAY);
+    const hours = Math.floor((seconds % DAY) / HOUR);
+    const minutes = Math.floor((seconds % HOUR) / MINUTE);
+    const secondsLeft = Math.floor(seconds % MINUTE);
 
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${days === 0 ? '' : `(+${days}d)`}`
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${days === 0 ? '' : `(+${days}d)`}`;
   }
 
+  //* this function is used to expand the paths list
+  //* fires when the 'View more' button is clicked
   function expand() {
-    setIsExpanded(true)
+    setIsExpanded(true);
   }
 
+  //* set the 'isExpanded' state to false every time the data changes
   useEffect(() => {
-    setIsExpanded(false)
-  }, [props.data])
+    setIsExpanded(false);
+  }, [props.data]);
 
   return (
     <div className={props.className}>
@@ -33,7 +41,7 @@ const PathsDisplay = (props) => {
         ) ? (
           <div className={`h-full px-4 flex flex-col ${isExpanded ? 'overflow-y-auto' : ''}`}>
             {
-              (isExpanded ? props.data : props.data.slice(0, 3))
+              (isExpanded ? props.data : props.data.slice(0, 3)) //* show only the first 3 if not expanded
               .map((path, index) => (
                 <div key={index} className='flex flex-row items-center justify-between pr-3'>
                   <div className="block h-full pt-3">

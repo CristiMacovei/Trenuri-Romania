@@ -1,76 +1,102 @@
-import { useRef, useEffect, useState } from 'react'
+//* import the hooks from the react framework
+import { useRef, useEffect, useState } from 'react';
 
-import { removeCookies, getCookie } from 'cookies-next'
+//* import the cookie handling functions provided by next
+import { removeCookies, getCookie } from 'cookies-next';
 
-import ModalButton from './ModalButton'
-import axios from 'axios'
-import StyledButton from './StyledButton'
-import ColorInput from './ColorInput'
+//* axios is used to send requests to the backend server
+import axios from 'axios';
 
+//* import the previous components
+import ModalButton from './ModalButton';
+import StyledButton from './StyledButton';
+import ColorInput from './ColorInput';
+
+//* this component is used in the main user interface and contains the 3 user buttons
 const Navbar = (props) => {
-  const refAccountSpan = useRef()
-  const refHistory = useRef()
+  //* create references for the components
+  const refAccountSpan = useRef();
+  const refHistory = useRef();
 
-  const [history, setHistory] = useState([])
+  //* create a state for the history
+  //* this is initialised as an empty array since it will be fetched via a request to the backend server when the page is rendered
+  const [history, setHistory] = useState([]);
 
+  //* this function logs the user out and it fires when the user clicks the 'Log out' button inside the account modal
   function logOut() {
-    removeCookies('qwe-token')
+    //* delete the token cookie
+    removeCookies('qwe-token');
 
-    window.location.href = '/login'
+    //* redirect to the login page
+    window.location.href = '/login';
   }
  
+  //* when the page is rendered check the integrity of the token cookie to make sure the user is authenticated
   useEffect(() => {
-    const token = getCookie('qwe-token')
+    //* get the cookie token
+    const token = getCookie('qwe-token');
 
+    //* verify it with the backend server
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth`, {
       token
     })
     .then(res => {
-      console.log(res.data)
+      console.log('Attempting to authenticate user', token, res.data);
+
       if (res.data.status === 'success') {
-        refAccountSpan.current.innerHTML = `Logged in as ${res.data.user.username}`
+        //* display user data
+        refAccountSpan.current.innerHTML = `Logged in as ${res.data.user.username}`;
       }
       else {
-        logOut()
+        //* if the token is invalid, delete it and redirect to the login page
+        logOut();
       }
-    })
-  }, [])
+    });
+  }, []);
 
+  //* this function is used to fetch the user's history from the backend server
   async function fetchHistory() {
-    const token = getCookie('qwe-token')
+    //* get the token from the cookie
+    //* at this point we already assume the token is verified
+    const token = getCookie('qwe-token');
 
+    //* send a request to the /history endpoint
     const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/history`, {
       headers: {
         Authorization: token
       }
-    })
+    });
     
     if (res.data.status === 'success') {
-      setHistory(res.data.history)
+      //* if the API responds with a success, save the data in the 'history' state
+      setHistory(res.data.history);
     }
   }
 
+  //* this function fires when the user changes their preffered marker color in the theme menu
   function handleMarkerColorChange(evt) {
     evt.preventDefault();
 
-    console.log(evt.target.value);
-
+    //* save the data in the parent component's state via the inherited setter function
     if (typeof props.fParentSetMapMarkerColor === 'function') {
-      props.fParentSetMapMarkerColor(evt.target.value);    }
+      props.fParentSetMapMarkerColor(evt.target.value);    
+    }
   }
-
+  
+  //* this function fires when the user changes their preffered detail color in the theme menu
   function handleDetailsColorChange(evt) {
     evt.preventDefault();
 
-    console.log(evt.target.value);
-
+    //* save the data in the parent component's state via the inherited setter function
     if (typeof props.fParentSetMapDetailsColor === 'function') {
-      props.fParentSetMapDetailsColor(evt.target.value);    }
+      props.fParentSetMapDetailsColor(evt.target.value);
+    }
   }
 
+  //* fetch history on page render
   useEffect(() => {
-    fetchHistory()
-  }, [])
+    fetchHistory();
+  }, []);
 
   return (
     <nav className={props.className}>
