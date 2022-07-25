@@ -1,9 +1,16 @@
-import { useRef, useEffect, useState, useMemo } from 'react';
+//* import the hooks from the react framework
+import { useRef, useEffect, useState } from 'react';
+
+//* import the cookie handling functions provided by next to store the auth token in the cookies
 import { getCookie } from 'cookies-next';
+
+//* import axios for making requests to the backend server
 import axios from 'axios';
 
+//* use next dynamic rendering since the Leaflet.js map does not support server-side rendering (ssr)
 import dynamic from 'next/dynamic';
 
+//* import custom components
 import AutocompleteInput from '../components/AutocompleteInput';
 import Navbar from '../components/Navbar';
 import PathsDisplay from '../components/PathsDisplay';
@@ -11,6 +18,7 @@ import PathDetails from '../components/PathDetails';
 import DatepickerInput from '../components/DatepickerInput';
 
 const IndexPage = () => {
+  //* create references for all the components
   const main = useRef();
   
   const refStartInput = useRef();
@@ -23,76 +31,97 @@ const IndexPage = () => {
   const refDestLatInput = useRef();
   const refDestLonInput = useRef();
   
-  const [nightTheme, setNightTheme] = useState(false);
+  //* this is used to store all the stations that are provided by the API
+  //* this will later be used as data for the autocomplete inputs
   const [stations, setStations] = useState([]);
-  const [paths, setPaths] = useState([]);
-  const [markers, setMarkers] = useState({ start: null, dest: null });
-  const [selectedPath, setSelectedPath] = useState(null);
-  const [markerColor, setMarkerColor] = useState('#ff0000');
-  const [detailsColor, setDetailsColor] = useState('#00ff00');
 
+  //* this contains the paths found by the API and that should be displayed as result of the user's search
+  const [paths, setPaths] = useState([]);
+
+  //* contains data related to the map markers
+  //* if one of the 2 markers is set to null, then no station is selected for either start or destination
+  const [markers, setMarkers] = useState({ start: null, dest: null });
+
+  //* contains the path opened in detailed view 
+  //* if this is set to null, there's no path opened in detailed view
+  const [selectedPath, setSelectedPath] = useState(null);
+
+  //* user prefference states
+  const [markerColor, setMarkerColor] = useState('#ff0000');
+  const [detailsColor, setDetailsColor] = useState('#07a309');
+
+  //* import the map without server-side rendering
   const MapWithNoSSR = dynamic(() => import("../components/Map"), {
     ssr: false
   });
 
+  //* the same as the function used in the autocomplete component and the API
   function compressName(string) {
     return string.toLowerCase().replaceAll(' ', '').replaceAll('.', '').replaceAll('â', 'a').replaceAll('ă', 'a').replaceAll('î', 'i').replaceAll('ș', 's').replaceAll('ş', 's').replaceAll('ț', 't').replaceAll('ţ', 't');
   }
 
+  //* clear all search results
   function removePaths() {
     setPaths([]);
   }
 
+  //* this fires when the user submits the homepage trip detail form
   async function handleFormSubmit(evt) {
-    evt.preventDefault()
+    //* prevent the default behaviour of form submission
+    evt.preventDefault();
 
-    const fData = new FormData(evt.target)
+    //* get all the data from the FormData object
+    const fData = new FormData(evt.target);
     
     const data = {
       startId: fData.get('start-station-id'),
       destId: fData.get('destination-station-id')
-    }
+    };
 
+    //* send a request to the API to get the paths
     const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/path/v2`, {
       params: data,
       headers: {
         'Authorization': getCookie('qwe-token')
       }
-    })
+    });
 
-    console.log(res)
-
+    //* if there's no success clear everything
     if (res.data.status !== 'success') {
-      setPaths([])
+      setPaths([]);
     }
+    //* otherwise display the paths
     else {
-      setPaths(res.data.pathsArr)
+      setPaths(res.data.pathsArr);
     }
   }
   
-  //? verify token & redirect if invalid
+  //* on page render verify the token & redirect if invalid
   useEffect(() => {
-    const tokenCookie = getCookie('qwe-token')
+    //* fetch token from the cookie
+    const tokenCookie = getCookie('qwe-token');
 
+    //* verify the token with the backend server
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth`, {
       token: tokenCookie
     })
     .then(res => {
       console.log(res)
 
+      //* if the token is valid show the homepage interface, otherwise redirect back to the login page
       if (res.data.status === 'success') {
-        main.current.classList.remove('hidden')
-        main.current.classList.add('flex')
+        main.current.classList.remove('hidden');
+        main.current.classList.add('flex');
       }
       else {
-        window.location.href = '/login'
+        window.location.href = '/login';
       }
     })
 
     
-  }, [])
+  }, []);
 
-  //? fetch stations on page load for autocomplete
+  //* fetch stations on page load for autocomplete
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/data/stations`)
     .then(res => {      
@@ -103,9 +132,12 @@ const IndexPage = () => {
     })
   }, [])
 
+  //* this function fires when the user selects a start station from the first autocomplete input
   function handleStartSelected(evt) {
+    //* clear the paths
     setPaths([]);
 
+    //* set the start marker to the given station's location
     setMarkers({
       start: {
         position: [refStartLatInput.current.value, refStartLonInput.current.value],
@@ -115,9 +147,13 @@ const IndexPage = () => {
     });
   }
 
+  //* this function fires when the user selects a destination station from the first autocomplete input
   function handleDestSelected(evt) {
+    //* clear the paths
     setPaths([]);
     
+    
+    //* set the destination marker to the given station's location
     setMarkers({
       start: markers.start,
       dest: {
@@ -127,7 +163,9 @@ const IndexPage = () => {
     });
   }
 
+  //* remove both markers
   function removeMarkers() {
+    //* if they're already null, nothing to be done
     if (markers.start === null && markers.dest === null) {
       return;
     }
@@ -135,6 +173,7 @@ const IndexPage = () => {
     setMarkers({ start: null, dest: null });
   }
 
+  //* remove just the start marker
   function removeStartMarker() {
     if (markers.start === null) {
       return;
@@ -143,6 +182,7 @@ const IndexPage = () => {
     setMarkers({ start: null, dest: markers.dest });
   }
 
+  //* remove just the destination marker
   function removeDestMarker() {
     if (markers.dest === null) {
       return;
@@ -162,7 +202,7 @@ const IndexPage = () => {
         />
       </div>
       
-      <div className={`${nightTheme ? 'bg-gray-700' : 'bg-white'} relative flex flex-col justify-center w-1/4 h-full`}>
+      <div className={`bg-white relative flex flex-col justify-center w-1/4 h-full`}>
         {
           //* if there's a path selected, display info about that specific path, otherwise display the default interface
         }

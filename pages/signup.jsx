@@ -1,32 +1,43 @@
-import { useRef } from 'react'
-import axios from 'axios'
-import { setCookies } from 'cookies-next'
+//* import axios for making requests to the backend server
+import axios from 'axios';
 
+//* import the cookie handling functions provided by next to store the auth token in the cookies
+import { setCookies } from 'cookies-next';
+
+//* import the components from next
 import Image from 'next/image'
 import Link from 'next/link'
 
+//* import custom styled components
 import LoginStyledInput from '../components/LoginStyledInput'
 import StyledButton from '../components/StyledButton'
 
 const SignupPage = () => {
+  //* this function handles the sign up form submission
   async function handleSubmit(evt) {
-    evt.preventDefault()
+    //* prevent the default behaviour of form submission
+    evt.preventDefault();
 
-    const fData = new FormData(evt.target)
+    //* get user data from the FormData object
+    const fData = new FormData(evt.target);
 
-    const username = fData.get('username')
-    const password = fData.get('password')
+    const username = fData.get('username');
+    const password = fData.get('password');
 
+    //* send a request to the /signup route
     const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/signup`, {
       username,
       password
-    })
+    });
 
-    console.log(response.data)
+    //* for debugging purposes
+    console.log('Attempting sign up request', username, password, response.data);
+
+    //* if the response is successful, save the token in a cookie and redirect to the home page
     if (response.data.status === 'success') {
-      setCookies('qwe-token', response.data.user.token)
+      setCookies('qwe-token', response.data.user.token);
 
-      window.location.href = '/'
+      window.location.href = '/';
     }
   }
 
@@ -56,7 +67,7 @@ const SignupPage = () => {
         </form>
       </div>
     </div>
-  )
+  );
 }
 
-export default SignupPage
+export default SignupPage;
