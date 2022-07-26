@@ -1,34 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Trenuri-Romania
 
-## Getting Started
+## Project Description
+Our project is designed to help users find the shortest way from their desired destinations via railway.
 
-First, run the development server:
+## What sets us apart?
+There's quite a feq websites that offer users the possibility to search for a way to get from point A to point B via railway. However, our app has two significant advantages over all of them:
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+### 1) The interactive map 
+Our project gives the users the opportunity to play around with an interactive map of Romania, which helps give them a sense of direction regarding the places that they visit.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2) The accounts and the history feature
+Our project also has an account system, where users need to be logged in in order to access the features our app provides. Using this, they can access their own search history and revisit their past searches.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## The User Interface
+Our app's user interface consists of three different pages: login, signup and the homepage.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+### Login and Signup
+These two pages are similar, and their purpose is to let the user log in to our app. Below is a screenshot of our login page.
+![Login interface](https://i.imgur.com/PuDzzVp.png)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Homepage
+This is where users can make their searches with the help of our interface. The homepage contains the interactive map (left), and the user menu (right) ie the navbar with 3 buttons, the trip details form and the results shown below.
+Here is a screenshot of how a normal trip search would go on our website:
+![Trip search](https://i.imgur.com/toRdloo.png)
+Furthermore, if the user wishes to see a more detailed view of the trip, our app offers that possibility as well, with the 'Show detailed view' button. Here's how that looks:
+![Detailed view](https://i.imgur.com/uzaz7WF.png)
